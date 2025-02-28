@@ -2,13 +2,15 @@ from django.db import models
 
 from django.contrib.auth.models import AbstractUser
 
+from ckeditor.fields import RichTextField
+
 
 class User(AbstractUser):
     """
     Custom User model that inherits from Django's AbstractUser model.
     """
     phone_number = models.CharField(max_length=15, unique=True, null=True, blank=True, db_index=True)
-    bio = models.TextField(blank=True, null=True)
+    bio = RichTextField(blank=True, null=True)
     profile_photo = models.ImageField(upload_to='profiles/', blank=True, null=True)
     is_bot = models.BooleanField(default=False)
     last_seen = models.DateTimeField(auto_now=True)
@@ -47,7 +49,7 @@ class Chat(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_public = models.BooleanField(default=False)
     invite_link = models.CharField(max_length=255, blank=True, null=True, db_index=True)
-    description = models.TextField(blank=True, null=True)
+    description = RichTextField(blank=True, null=True)
     admin_users = models.ManyToManyField(User, related_name='admin_in_chats', blank=True)
     pinned_messages = models.ManyToManyField('Message', blank=True, related_name='pinned_in')
 
@@ -65,7 +67,7 @@ class Message(models.Model):
     """
     sender = models.ForeignKey(User, on_delete=models.CASCADE)
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='messages')
-    text = models.TextField(blank=True, null=True)
+    text = RichTextField(blank=True, null=True)
     media = models.FileField(upload_to='messages/', blank=True, null=True)
     reply_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -129,7 +131,7 @@ class Notification(models.Model):
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.ForeignKey(Message, on_delete=models.CASCADE, null=True, blank=True)
-    text = models.TextField(null=True, blank=True)
+    text = RichTextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
     notification_type = models.CharField(max_length=50, default='message')
@@ -176,7 +178,7 @@ class Bot(models.Model):
     name = models.CharField(max_length=255, db_index=True)
     username = models.CharField(max_length=50, unique=True, db_index=True)
     token = models.CharField(max_length=255, unique=True)
-    description = models.TextField(blank=True, null=True)
+    description = RichTextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     commands = models.JSONField(default=dict)
 
@@ -203,7 +205,7 @@ class Media(models.Model):
     file = models.FileField(upload_to='media/')
     media_type = models.CharField(max_length=10, choices=MEDIA_TYPES)
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    caption = models.TextField(blank=True, null=True)
+    caption = RichTextField(blank=True, null=True)
     views = models.PositiveIntegerField(default=0)
     is_private = models.BooleanField(default=False)
 

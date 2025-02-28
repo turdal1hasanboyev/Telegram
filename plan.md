@@ -1,3 +1,4 @@
+```
 asgiref==3.8.1
 Django==5.1.6
 django-ckeditor==6.7.2
@@ -21,3 +22,4 @@ tabulate==0.9.0
 tzdata==2025.1
 uritemplate==4.1.1
 whitenoise==6.9.0
+```

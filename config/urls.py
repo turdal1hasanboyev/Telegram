@@ -22,12 +22,46 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
 
+# drf-yasg
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+# custom not found
+from django.conf.urls import handler404
+from .errors import CustomPageNotFoundView
+from .errors import custom_page_not_found_as_view
+
+
+schema_view = get_schema_view(
+   openapi.Info(
+      title="Telegram API",
+      default_version='v1',
+      description="Test description",
+      terms_of_service="https://www.google.com/policies/terms/",
+      contact=openapi.Contact(email="contact@snippets.local"),
+      license=openapi.License(name="BSD License"),
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
+)
+
 
 urlpatterns = [
     path('telegram/', admin.site.urls),
 
     # local path
     path('', include('telegram.urls')),
+
+    # ckeditor path
+    path('ckeditor/', include('ckeditor_uploader.urls')),
+
+    # rest path
+    path('api-auth/', include('rest_framework.urls')),
+
+    path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
@@ -36,3 +70,13 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
+
+handler404 = custom_page_not_found_as_view
+
+"""
+import bilan
+handler404 = CustomPageNotFoundView.as_view()
+importlarsiz kirib borish
+handler404 = 'config.errors.CustomPageNotFoundView.as_view()'
+handler404 = 'config.errors.custom_page_not_found_as_view'
+"""
